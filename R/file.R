@@ -16,6 +16,7 @@ sample.totals <- function(f, pattern = '\n', n = 100, page.size = 2^14) {
   con <- file(f, open = 'rb')
   file.start <- seek(con, where = 0, origin = 'end')
   file.end <- seek(con)
+  file.size <- file.end - file.start
   if (file.end <= file.start)
     stop('The file is empty, or you have seeked to a strange part of it.')
 
@@ -33,8 +34,8 @@ sample.totals <- function(f, pattern = '\n', n = 100, page.size = 2^14) {
   wheres <- file.start + (pages - 1) * page.size
 
   counts <- data.frame(ids = wheres,
-                       probs = page.sizes[pages] / N,
+                       weights = page.sizes[pages] * (N / n),
                        fpc = page.sizes[pages],
-                       count = sapply(wheres, total.sample))
-  svymean(~ids, probs = ~probs, fpc = ~fpc, data = counts)
+                       p = sapply(wheres, total.sample) / page.sizes[pages])
+  svydesign(~ids, weights = ~weights, fpc = ~fpc, data = counts)
 }
