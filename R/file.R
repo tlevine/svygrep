@@ -7,7 +7,7 @@ library(survey)
 #' @param n Sample size
 #' @param Each observation within the sample is this many bytes long.
 #' @return survey object of some sort
-estimate.count <- function(f, pattern = '\n', n = 1000, page.size = 2^14) {
+svygrep <- function(f, pattern = '\n', n = 1000, page.size = 2^14) {
   if (n < 0)
     stop('Sample size must be greater than zero.')
 
@@ -28,7 +28,7 @@ estimate.count <- function(f, pattern = '\n', n = 1000, page.size = 2^14) {
     seek(con, where)
     length(strsplit(readChar(con, page.size), pattern))
   }
-  wheres <- file.start + sort(sample.int(0, N)) * page.size
+  wheres <- file.start + sort(sample.int(N, n) - 1) * page.size
   counts <- data.frame(where = wheres,
                        count = sapply(wheres, total.sample))
   svydesign(id = ~1, weights = 1, fpc = rep(1/n, n), data = iris)
