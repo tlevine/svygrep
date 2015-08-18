@@ -40,4 +40,5 @@ svygrepc <- function(f, pattern = '\n', n = 200, page.size = 2^14) {
   close(con)
   design <- svydesign(~ids, weights = ~weights, fpc = ~fpc, data = counts)
   print(svytotal(~count, design))
+  print(confint(svytotal(~count, design)))
 }
