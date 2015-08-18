@@ -16,4 +16,10 @@ estimate.count <- function(f, pattern = '\n', n = 1000, page.size = 2^14) {
   # Population size, ignoring the last page for now.
   # To do: Weight the last page lower, proportional to its size.
   N <- as.integer((file.end - file.start) / page.size)
+
+  if (file.end <= file.start)
+    stop('The file is empty, or you have seeked to a strange part of it.')
+  else if (N <= n)
+    stop('File is too small; just read the whole file.')
+
 }
