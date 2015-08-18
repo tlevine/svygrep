@@ -1,6 +1,8 @@
 library(survey)
 
 #' Estimate how many times a particular pattern appears in a file.
+#' This is a cluster sample, with each page as a cluster and with
+#' clusters selected simple-randomly.
 #'
 #' @param file Filename
 #' @param pattern The pattern to match
@@ -14,20 +16,24 @@ sample.totals <- function(f, pattern = '\n', n = 100, page.size = 2^14) {
   con <- file(f, open = 'rb')
   file.start <- seek(con, where = 0, origin = 'end')
   file.end <- seek(con)
-
-  # Population size, ignoring the last page for now.
-  # To do: Weight the last page lower, proportional to its size.
-  N <- as.integer((file.end - file.start) / page.size)
-
   if (file.end <= file.start)
     stop('The file is empty, or you have seeked to a strange part of it.')
-  else if (N <= n)
+
+  last.page.start <- file.end - file.start
+  N <- ceiling(last.page.start / page.size)
+  if (N <= n)
     stop('File is too small; just read the whole file.')
+
+  weights <- c(rep(page.size, N - 1), file.end - last.page.start)
 
   total.sample <- function(where) {
     seek(con, where)
     length(strsplit(readChar(con, page.size), pattern)[[1]])
   }
   wheres <- file.start + sort(sample.int(N, n) - 1) * page.size
-  sapply(wheres, total.sample)
+
+  data.frame(id = wheres,
+             fpc = page.size,
+             weights = 
+             count = sapply(wheres, total.sample))
 }
