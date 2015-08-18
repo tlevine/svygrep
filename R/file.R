@@ -28,12 +28,12 @@ sample.totals <- function(f, pattern = '\n', n = 100, page.size = 2^14) {
     seek(con, where)
     length(strsplit(readChar(con, page.size), pattern)[[1]])
   }
-  fpc <- c(rep(page.size, N - 1), file.end - last.page.start)
+  page.sizes <- c(rep(page.size, N - 1), file.end - last.page.start)
   pages <- sort(sample.int(N, n))
   wheres <- file.start + (pages - 1) * page.size
 
-  data.frame(id = wheres,
-             fpc = fpc[pages],
-             weights = wheres,
-             count = sapply(wheres, total.sample))
+  counts <- data.frame(ids = wheres,
+                       fpc = page.sizes[pages],
+                       count = sapply(wheres, total.sample))
+  svydesign(~ids, fpc = ~fpc, data = counts)
 }
