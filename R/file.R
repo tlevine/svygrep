@@ -24,7 +24,8 @@ sample.totals <- function(f, pattern = '\n', n = 100, page.size = 2^14) {
   if (N <= n)
     stop('File is too small; just read the whole file.')
 
-  weights <- c(rep(page.size, N - 1), file.end - last.page.start)
+  fpc <- c(rep(page.size, N - 1), file.end - last.page.start)
+  weights <- 1 / fpc
 
   total.sample <- function(where) {
     seek(con, where)
