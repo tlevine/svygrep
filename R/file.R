@@ -24,17 +24,16 @@ sample.totals <- function(f, pattern = '\n', n = 100, page.size = 2^14) {
   if (N <= n)
     stop('File is too small; just read the whole file.')
 
-  fpc <- c(rep(page.size, N - 1), file.end - last.page.start)
-  weights <- 1 / fpc
-
   total.sample <- function(where) {
     seek(con, where)
     length(strsplit(readChar(con, page.size), pattern)[[1]])
   }
-  wheres <- file.start + sort(sample.int(N, n) - 1) * page.size
+  fpc <- c(rep(page.size, N - 1), file.end - last.page.start)
+  pages <- sort(sample.int(N, n))
+  wheres <- file.start + (pages - 1) * page.size
 
   data.frame(id = wheres,
-             fpc = page.size,
-             weights = 
+             fpc = fpc[pages],
+             weights = wheres,
              count = sapply(wheres, total.sample))
 }
