@@ -34,8 +34,8 @@ sample.totals <- function(f, pattern = '\n', n = 100, page.size = 2^14) {
   wheres <- file.start + (pages - 1) * page.size
 
   counts <- data.frame(ids = wheres,
-                       weights = (file.size / page.sizes[pages]),
-                       fpc = (file.size - page.sizes[pages]) / file.size,
+                       probs = 1 / file.size,
+                       fpc = (file.size / page.sizes[pages]),
                        p = sapply(wheres, total.sample) / page.sizes[pages])
-  svydesign(~ids, weights = ~weights, fpc = ~fpc, data = counts)
+  svydesign(~ids, probs = ~probs, fpc = ~fpc, data = counts)
 }
