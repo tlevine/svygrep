@@ -9,7 +9,7 @@ library(survey)
 #' @param n Sample size
 #' @param Each observation within the sample is this many bytes long.
 #' @return survey object of some sort
-sample.totals <- function(f, pattern = '\n', n = 100, page.size = 2^14) {
+svygrepc <- function(file, ...) {
   if (n < 0)
     stop('Sample size must be greater than zero.')
 
@@ -37,5 +37,6 @@ sample.totals <- function(f, pattern = '\n', n = 100, page.size = 2^14) {
                        weights = N / n,
                        fpc = file.size / page.sizes[pages],
                        count = sapply(wheres, total.sample))
-  svydesign(~ids, weights = ~weights, fpc = ~fpc, data = counts)
+  design <- svydesign(~ids, weights = ~weights, fpc = ~fpc, data = counts)
+  print(svytotal(~count, design))
 }
