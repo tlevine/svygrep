@@ -9,7 +9,7 @@ library(survey)
 #' @param n Sample size
 #' @param Each observation within the sample is this many bytes long.
 #' @return survey object of some sort
-svygrepc <- function(f, pattern = '\n', n = 200, page.size = 2^14) {
+svygrepc.file <- function(f, pattern = '\n', n = 200, page.size = 2^14) {
   if (n < 0)
     stop('Sample size must be greater than zero.')
 
